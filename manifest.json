@@ -12,7 +12,7 @@
     ],
     "content_scripts": [
       {
-        "matches": ["*://*.tmall.com/*"],
+        "matches": ["*://*.tmall.com/*", "*://*.taobao.com/*"],
         "js": ["js/content.js"],
         "css": ["css/style.css"]
       }
