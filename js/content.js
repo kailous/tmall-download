@@ -30,7 +30,7 @@
         const mainTitleElement = document.querySelector('h1[class^="ItemHeader--mainTitle"]');
         return mainTitleElement ? mainTitleElement.innerText : '';
     }
-
+    
     // 准备下载所有图片
     function downloadAllImages() {
         const mainTitle = getMainTitle();
@@ -44,6 +44,20 @@
                 const fileExtension = imageUrl.split('.').pop();
                 const fileName = `主图_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
                 imagesData.push({ url: 'https:' + imageUrl, filename: fileName, type: 'main' });
+            }
+        });
+
+        // 获取SKU图片 className="skuIcon" 的img标签
+        const skuImages = document.querySelectorAll('.skuIcon'); // 选取SKU图片
+        skuImages.forEach((image, index) => {
+            let imageUrl = image.getAttribute('src') || image.getAttribute('data-src');
+            if (imageUrl) {
+                imageUrl = imageUrl.replace(/_\w*\.jpg_\w*\.webp/g, '');
+                if (imageUrl.startsWith('//gw.alicdn.com')) {
+                    const fileExtension = imageUrl.split('.').pop();
+                    const fileName = `SKU_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
+                    imagesData.push({ url: 'https:' + imageUrl, filename: fileName, type: 'sku' });
+                }
             }
         });
 
