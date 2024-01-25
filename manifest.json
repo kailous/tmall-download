@@ -1,0 +1,30 @@
+{
+    "manifest_version": 2,
+    "name": "天猫图片下载器",
+    "version": "1.0",
+    "description": "为天猫商品详情页添加下载图片的功能",
+    "background": {
+        "scripts": ["js/jszip.min.js", "js/background.js"],
+        "persistent": false
+    },
+    "permissions": [
+        "*://*.tmall.com/*",
+        "downloads"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://detail.tmall.com/*",
+                "*://*.detail.tmall.com/*"
+            ],
+            "js": ["js/content.js"],
+            "css": ["css/style.css"]
+        }
+    ],
+    "icons": {
+        "48": "img/app-icon-48.png"
+    },
+    "browser_action": {
+        "default_icon": "img/app-icon.png"
+    }
+}
