@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "天猫图片下载器",
-    "version": "1.0",
-    "description": "为天猫商品详情页添加下载图片的功能",
+    "name": "天猫&淘宝产品下载器",
+    "version": "2.0",
+    "description": "为天猫和淘宝商品详情页添加下载图片的功能",
     "background": {
       "service_worker": "js/background.js"
     },
