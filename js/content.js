@@ -1,5 +1,5 @@
 // content.js
-(function() {
+(function () {
     'use strict';
 
     // 创建下载按钮容器
@@ -9,12 +9,22 @@
 
     // 创建下载按钮
     function createDownloadButtons() {
-        // 创建一个按钮用于下载所有图片
         const downloadAllButton = document.createElement('button');
-        downloadAllButton.innerHTML = '下载所有图片';
+
+        // 插入icon
+        const icon = document.createElement('img');
+        icon.src = chrome.extension.getURL('img/down.svg');
+        icon.className = 'downloadImgButton-icon';
+        downloadAllButton.appendChild(icon);
+
+        // 插入文字
+        const text = document.createTextNode('下载产品');
+        downloadAllButton.appendChild(text);
+
         downloadAllButton.addEventListener('click', downloadAllImages);
         downloadButtonContainer.appendChild(downloadAllButton);
     }
+
 
     // 获取商品主标题
     function getMainTitle() {
@@ -33,7 +43,7 @@
             const imageUrl = thumbnail.getAttribute('src').replace(/_\w*\.jpg_\w*\.webp/g, '');
             if (imageUrl && imageUrl.startsWith('//gw.alicdn.com')) {
                 const fileExtension = imageUrl.split('.').pop();
-                const fileName = `${mainTitle}_主图_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
+                const fileName = `主图_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
                 imagesData.push({ url: 'https:' + imageUrl, filename: fileName });
             }
         });
@@ -44,14 +54,14 @@
             let imageUrl = image.getAttribute('data-src') || image.getAttribute('src');
             if (imageUrl && imageUrl.startsWith('https://img.alicdn.com')) {
                 const fileExtension = imageUrl.split('.').pop().split('?')[0];
-                const fileName = `${mainTitle}_详情_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
+                const fileName = `详情_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
                 imagesData.push({ url: imageUrl, filename: fileName });
             }
         });
 
         // 发送图片数据到背景脚本以下载
         if (imagesData.length > 0) {
-            chrome.runtime.sendMessage({ action: "downloadImages", images: imagesData });
+            chrome.runtime.sendMessage({ action: "downloadImages", images: imagesData, zipName: mainTitle || '下载的图片' });
         } else {
             console.log('没有找到可下载的图片。');
         }
