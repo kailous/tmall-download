@@ -43,7 +43,7 @@
             if (imageUrl && imageUrl.startsWith('//gw.alicdn.com')) {
                 const fileExtension = imageUrl.split('.').pop();
                 const fileName = `主图_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
-                imagesData.push({ url: 'https:' + imageUrl, filename: fileName });
+                imagesData.push({ url: 'https:' + imageUrl, filename: fileName, type: 'main' });
             }
         });
 
@@ -54,7 +54,7 @@
             if (imageUrl && imageUrl.startsWith('https://img.alicdn.com')) {
                 const fileExtension = imageUrl.split('.').pop().split('?')[0];
                 const fileName = `详情_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
-                imagesData.push({ url: imageUrl, filename: fileName });
+                imagesData.push({ url: imageUrl, filename: fileName, type: 'detail' });
             }
         });
 

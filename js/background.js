@@ -9,25 +9,34 @@ try {
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "downloadImages" && request.images) {
       const zip = new JSZip();
-      const zipName = request.zipName.replace(/[\/\\:*?"<>|]/g, '_') + '.zip'; // 移除非法字符
+      const mainFolderName = request.zipName.replace(/[\/\\:*?"<>|]/g, '_'); // 移除非法字符
+      const mainFolder = zip.folder(mainFolderName);
+      const detailFolder = zip.folder(`${mainFolderName}/详情图`);
+      const imageFetchPromises = [];
   
-      const imagePromises = request.images.map(image => 
-        fetch(image.url)
-        .then(response => response.blob())
-        .then(blob => zip.file(image.filename, blob))
-      );
+      request.images.forEach(image => {
+        const imagePromise = fetch(image.url)
+          .then(response => response.blob())
+          .then(blob => {
+            if (image.type === 'main') {
+              mainFolder.file(image.filename, blob);
+            } else if (image.type === 'detail') {
+              detailFolder.file(image.filename, blob);
+            }
+          }).catch(e => console.error('Failed to fetch image:', e));
+        imageFetchPromises.push(imagePromise);
+      });
   
-      Promise.all(imagePromises).then(() => {
+      // 等待所有图片fetch操作完成
+      Promise.all(imageFetchPromises).then(() => {
         zip.generateAsync({ type: "blob" }).then(function(content) {
-          // 将Blob对象转换为数据URL
           const reader = new FileReader();
           reader.onloadend = function() {
-            // 使用数据URL进行下载
             chrome.downloads.download({
               url: reader.result,
-              filename: zipName,
-              saveAs: true, // 提示用户选择保存位置
-              conflictAction: 'uniquify' // 避免文件名冲突
+              filename: `${mainFolderName}.zip`,
+              saveAs: true,
+              conflictAction: 'uniquify'
             }, function(downloadId) {
               if (chrome.runtime.lastError) {
                 console.error('Download failed:', chrome.runtime.lastError);
@@ -37,7 +46,7 @@ try {
             });
           };
           reader.readAsDataURL(content);
-        });
+        }).catch(e => console.error('Failed to generate ZIP:', e));
       });
     }
   });
