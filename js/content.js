@@ -13,7 +13,7 @@
 
         // 插入icon
         const icon = document.createElement('img');
-        icon.src = chrome.extension.getURL('img/down.svg');
+        icon.src = chrome.runtime.getURL('img/down.svg');
         icon.className = 'downloadImgButton-icon';
         downloadAllButton.appendChild(icon);
 
@@ -24,7 +24,6 @@
         downloadAllButton.addEventListener('click', downloadAllImages);
         downloadButtonContainer.appendChild(downloadAllButton);
     }
-
 
     // 获取商品主标题
     function getMainTitle() {
