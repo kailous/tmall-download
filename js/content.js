@@ -30,7 +30,7 @@
         const mainTitleElement = document.querySelector('h1[class^="ItemHeader--mainTitle"]');
         return mainTitleElement ? mainTitleElement.innerText : '';
     }
-    
+
     // 准备下载所有图片
     function downloadAllImages() {
         const mainTitle = getMainTitle();
@@ -39,11 +39,12 @@
         // 获取主图
         const thumbnails = document.querySelectorAll('ul[class^="PicGallery--thumbnails"] img');
         thumbnails.forEach((thumbnail, index) => {
-            const imageUrl = thumbnail.getAttribute('src').replace(/_\w*\.jpg_\w*\.webp/g, '');
+            let imageUrl = thumbnail.getAttribute('src').replace(/_\w*\.jpg_\w*\.webp/g, '');
             if (imageUrl && imageUrl.startsWith('//gw.alicdn.com')) {
+                imageUrl = 'https:' + imageUrl; // 确保添加 https 前缀
                 const fileExtension = imageUrl.split('.').pop();
                 const fileName = `主图_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
-                imagesData.push({ url: 'https:' + imageUrl, filename: fileName, type: 'main' });
+                imagesData.push({ url: imageUrl, filename: fileName, type: 'main' });
             }
         });
 
@@ -54,9 +55,10 @@
             if (imageUrl) {
                 imageUrl = imageUrl.replace(/_\w*\.jpg_\w*\.webp/g, '');
                 if (imageUrl.startsWith('//gw.alicdn.com')) {
+                    imageUrl = 'https:' + imageUrl; // 确保添加 https 前缀
                     const fileExtension = imageUrl.split('.').pop();
                     const fileName = `SKU_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
-                    imagesData.push({ url: 'https:' + imageUrl, filename: fileName, type: 'sku' });
+                    imagesData.push({ url: imageUrl, filename: fileName, type: 'sku' });
                 }
             }
         });
@@ -65,10 +67,16 @@
         const detailImages = document.querySelectorAll('div.desc-root img[data-src], div.desc-root img[src]');
         detailImages.forEach((image, index) => {
             let imageUrl = image.getAttribute('data-src') || image.getAttribute('src');
-            if (imageUrl && imageUrl.startsWith('https://img.alicdn.com')) {
-                const fileExtension = imageUrl.split('.').pop().split('?')[0];
-                const fileName = `详情_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
-                imagesData.push({ url: imageUrl, filename: fileName, type: 'detail' });
+            if (imageUrl) {
+                // 确保添加 https 前缀
+                if (imageUrl.startsWith('//')) {
+                    imageUrl = 'https:' + imageUrl;
+                }
+                if (imageUrl.startsWith('https://img.alicdn.com') || imageUrl.startsWith('https://gw.alicdn.com')) {
+                    const fileExtension = imageUrl.split('.').pop().split('?')[0];
+                    const fileName = `详情_${String(index + 1).padStart(2, '0')}.${fileExtension}`;
+                    imagesData.push({ url: imageUrl, filename: fileName, type: 'detail' });
+                }
             }
         });
 
